@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<robot name="j_first_bot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<gazebo reference="chassis">
+	  	 <material>Gazebo/Orange</material>
+	</gazebo>
+	
+	<gazebo reference="caster_wheel">
+		 <mu1>0.10</mu1>
+		 <mu2>0.10</mu2>
+		 <material>Gazebo/Red</material>
+	</gazebo>
+	
+		<gazebo>
+		 <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+		    <robotNamespace>/jitu_bot</robotNamespace>
+		 </plugin>
+	</gazebo>		
+	
+	<gazebo>
+	  <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+		<alwaysOn>true</alwaysOn>
+		<updateRate>100</updateRate>
+		<leftJoint>left_wheel_hinge</leftJoint>
+		<rightJoint>right_wheel_hinge</rightJoint>
+		<wheelSeparation>${chassisWidth+wheelWidth}</wheelSeparation>
+		<wheelDiameter>${2*wheelRadius}</wheelDiameter>
+	<!--	<torque>20</torque> -->
+		<commandTopic>jitu_bot/cmd_vel</commandTopic>
+		<odometryTopic>jitu_bot/odom_diffdrive</odometryTopic>
+		<odometryFrame>odom</odometryFrame>
+		<robotBaseFrame>footprint</robotBaseFrame>
+		<legacyMode>false</legacyMode>
+	  </plugin>
+	</gazebo>
+	
+	<gazebo reference="camera">
+		<material>Gazebo/Blue</material>
+		  <sensor type="camera" name="camera1">
+			<update_rate>30.0</update_rate>
+			
+			<camera name="headFront">
+				<pose>1 0 0 0 0 0</pose>
+			  <horizontal_fov>1.3962634</horizontal_fov>
+			  <image>
+				<width>800</width>
+				<height>800</height>
+				<format>R8G8B8</format>
+			  </image>
+			  <clip>
+				<near>0.02</near>
+				<far>300</far>
+			  </clip>
+			</camera>
+			
+			<plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+			  <alwaysOn>true</alwaysOn>
+			  <updateRate>0.0</updateRate>
+			  <cameraName>jitu_bot/camera1</cameraName>
+			  <imageTopicName>image_raw1</imageTopicName>
+			  <cameraInfoTopicName>camera_info1</cameraInfoTopicName>
+			  <frameName>camera_link1</frameName>
+			  <hackBaseline>0.07</hackBaseline>
+			  <distortionK1>0.0</distortionK1>
+			  <distortionK2>0.0</distortionK2>
+			  <distortionK3>0.0</distortionK3>
+			  <distortionT1>0.0</distortionT1>
+			  <distortionT2>0.0</distortionT2>
+			</plugin>
+		  </sensor>
+		 </gazebo>Adding a camera
+		 
+ 	<!-- **********************************-->
+	<!-- ********Added by Mr. J************-->
+	
+		<gazebo reference="camera2">
+		  <material>Gazebo/Green</material>
+		  <sensor type="camera" name="cameraBack">
+			<update_rate>30.0</update_rate>
+			<camera name="headBack">
+				<pose>1 0 0 0 0 -0.2</pose>
+			  <horizontal_fov>1.3962634</horizontal_fov>
+			  <image>
+				<width>800</width>
+				<height>800</height>
+				<format>R8G8B8</format>
+			  </image>
+			  <clip>
+				<near>0.02</near>
+				<far>300</far>
+			  </clip>
+			</camera>
+			<plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+			  <alwaysOn>true</alwaysOn>
+			  <updateRate>0.0</updateRate>
+			  <cameraName>jitu_bot/cameraBack</cameraName>
+			  <imageTopicName>image_rawBack</imageTopicName>
+			  <cameraInfoTopicName>camera_infoBack</cameraInfoTopicName>
+			  <frameName>camera_linkBack</frameName>
+			  <hackBaseline>1.07</hackBaseline>
+			  <distortionK1>1.0</distortionK1>
+			  <distortionK2>1.0</distortionK2>
+			  <distortionK3>1.0</distortionK3>
+			  <distortionT1>1.0</distortionT1>
+			  <distortionT2>1.0</distortionT2>
+			</plugin>
+		  </sensor>
+		 </gazebo>Adding a camera2
+		 
+		 -->
+	
+		 <gazebo reference="caster_wheel2">
+		 <mu1>0.10</mu1>
+		 <mu2>0.10</mu2>
+		 <material>Gazebo/Black</material>
+	</gazebo>
+	
+	
+	<!-- ********Added by Mr. J************-->
+	<gazebo reference="base_laser_link">
+		
+        <sensor name="laser" type="ray">
+        <pose>0 0 0 0 0 0</pose>
+          <ray>
+            <scan>
+              <horizontal>
+                <!-- The URG-04LX-UG01  has  683 steps with 0.35139 Degree resolution -->
+                <resolution>1</resolution>
+                <max_angle>2.0944</max_angle> <!-- 120 Degree -->
+                <min_angle>-2.0944</min_angle> <!-- -120 Degree -->
+                <samples>400</samples>
+              </horizontal>
+            </scan>
+            <range>
+              <min>0.08</min>
+              <max>5</max>
+              <resolution>0.01</resolution>
+            </range>
+
+ <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+
+          </ray>
+
+          <plugin name="laser_plug" filename="libgazebo_ros_laser.so" >
+            <topicName>base_laser_link/scan</topicName>
+            <frameName>base_laser_link</frameName>
+          </plugin>
+          <!--
+          <plugin name="laser" filename="libRayPlugin.so" />
+          -->
+
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+          <visualize>true</visualize>
+        </sensor>
+    </gazebo>
+	
+	<!-- **********************************-->
+</robot>

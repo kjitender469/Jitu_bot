@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<launch>	 
+	 
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">	    
+		<arg name="world_name" value="$(find jitu_bot)/worlds/jitu_bot.world"/>	    
+		<arg name="gui" value="true"/>	  
+	</include>
+	
+	<!-- ros_control mybot launch file -->
+	<include file="$(find jitu_bot_control)/launch/jitu_bot_control.launch"/>
+	 
+
+	<!-- urdf xml robot description loaded on the Parameter Server, converting the xacro into a proper urdf file-->
+	<param name="robot_description" command="$(find xacro)/xacro.py '$(find jitu_bot_description)/urdf/jitu_bot.xacro'"/>
+
+	<!-- push robot_description to factory and spawn robot in gazebo -->
+	<node name="jitu_bot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+	 args="-urdf -param robot_description -model jitu_bot" />
+	 
+<!--	 <arg name="scan_topic" default="kinect_scan"/>
+	 <node name="laser_driver" pkg="hokuyo_node" type="hokuyo_node">
+		<param name="frame_id" value="base_laser_link" />
+	</node>   -->
+</launch>
